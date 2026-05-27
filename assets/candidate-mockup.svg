@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="150" viewBox="0 0 560 150" font-family="-apple-system, 'Segoe UI', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif">
+  <!-- 画布背景（示意桌面，深色）-->
+  <rect width="560" height="150" rx="0" fill="#15161a"/>
+
+  <!-- 候选框 .kimpanel-popup-content：深色半透明 + 圆角 + 阴影 -->
+  <g>
+    <!-- 阴影 -->
+    <rect x="24" y="42" width="512" height="66" rx="14" fill="#000000" opacity="0.45"/>
+    <!-- 框体 -->
+    <rect x="20" y="36" width="512" height="66" rx="14" fill="#202126" stroke="#ffffff" stroke-opacity="0.08" stroke-width="1"/>
+
+    <!-- 上半区：aux 提示 + preedit 拼音 -->
+    <text x="40" y="62" fill="#e6e6ea" font-size="15">nihao shijie</text>
+    <text x="150" y="62" fill="#8a8a93" font-size="13">｜ 雾凇拼音</text>
+
+    <!-- 候选行 -->
+    <!-- ① 选中项高亮 .kimpanel-candidate-item:active -->
+    <rect x="36" y="74" width="92" height="22" rx="10" fill="#60A5FA" opacity="0.95"/>
+    <text x="44" y="90" fill="#ffffff" font-size="15">1 你好世界</text>
+
+    <text x="140" y="90" fill="#e6e6ea" font-size="15">2 你好</text>
+    <text x="214" y="90" fill="#e6e6ea" font-size="15">3 世界</text>
+    <text x="288" y="90" fill="#e6e6ea" font-size="15">4 你</text>
+    <text x="340" y="90" fill="#e6e6ea" font-size="15">5 拟</text>
+    <text x="392" y="90" fill="#e6e6ea" font-size="15">6 逆</text>
+  </g>
+
+  <!-- 标注（不属于候选框本身，仅说明）-->
+  <text x="20" y="128" fill="#5b5b66" font-size="11">mellow / kimpanel 深色圆角示意 — 选中项蓝色高亮，整句「你好世界」</text>
+</svg>
