@@ -1,75 +1,75 @@
 # linux-wayland-chinese-input-method
 
-A battle-tested guide (packaged as a [Claude skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview)) for getting a **Chinese pinyin input method working on Linux + GNOME Wayland** — using **fcitx5 + Rime** with the **rime-ice (雾凇拼音)** config.
+一份实战验证的指南（打包成 [Claude skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview)），用来在 **Linux + GNOME Wayland 上把中文拼音输入法装好**——方案是 **fcitx5 + Rime**，配合 **rime-ice（雾凇拼音）** 配置。
 
-> 在 Linux / GNOME Wayland 上把中文输入法装好的实战记录。搜狗在 Wayland 下闪屏打不出字，这里给出 fcitx5 + Rime/雾凇 的完整替代方案。
+> 搜狗在 Wayland 下闪屏、打不出字；这里给出 fcitx5 + Rime/雾凇 的完整替代方案，纯本地、不上传隐私。
 
 ![候选框示意 — 深色圆角，选中项蓝色高亮](assets/candidate-mockup.svg)
 
-## The problem this solves
+## 它解决什么问题
 
-If you're on **GNOME Wayland** and tried to set up Chinese input, you've probably hit one of these:
+如果你在 **GNOME Wayland** 上折腾过中文输入，多半撞过下面某一条：
 
-- **搜狗 (Sogou) flickers endlessly** and won't let you type — because its Linux build is still fcitx4, which GNOME Wayland doesn't handle.
-- **Qt apps can't type Chinese** even after installing fcitx5 — almost always the `IM_MODULE` env-var gotcha (the value must be `fcitx`, *not* `fcitx5`).
-- **The candidate window flickers in the terminal** but not in Chrome/Electron apps.
-- You got it working but the **candidate popup looks ugly** and you want to theme it.
+- **搜狗 (Sogou) 候选框无限闪屏、打不出字**——因为它的 Linux 版至今是 fcitx4，GNOME Wayland 不接它。
+- **Qt 应用打不出中文**，即使装了 fcitx5——几乎都是 `IM_MODULE` 环境变量的坑（值必须是 `fcitx`，**不是** `fcitx5`）。
+- **终端里候选框闪烁**，但 Chrome / Electron 应用却正常。
+- 好不容易装好了，但**候选框丑**，想换皮肤。
 
-This guide walks through the whole fix, with every gotcha that cost real time called out.
+这份指南把整套修法走一遍，每个踩过的坑都标了出来。
 
-## What's inside
+## 仓库内容
 
-| File | What it is |
-|------|------------|
-| [`SKILL.md`](SKILL.md) | The skill itself — concise install + config workflow with frontmatter. |
-| [`references/install-walkthrough.md`](references/install-walkthrough.md) | Full annotated 中文 walkthrough, every step + pitfall. |
-| [`references/kimpanel-theming.md`](references/kimpanel-theming.md) | How far you can style the candidate popup (kimpanel / St CSS), with a dark rounded baseline. |
+| 文件 | 说明 |
+|------|------|
+| [`SKILL.md`](SKILL.md) | skill 本体——带 frontmatter 的精简安装/配置流程。 |
+| [`references/install-walkthrough.md`](references/install-walkthrough.md) | 完整中文实战 walkthrough，每一步 + 每个坑。 |
+| [`references/kimpanel-theming.md`](references/kimpanel-theming.md) | 候选框皮肤能改到什么程度（kimpanel / St CSS），附一版深色圆角基线。 |
 
-## Quick start
+## 快速上手
 
-The TL;DR (read `SKILL.md` for the full version with explanations):
+精简版（完整带解释的版本见 `SKILL.md`）：
 
 ```bash
-# 1. Install fcitx5 + Rime
+# 1. 装 fcitx5 + Rime
 sudo apt update
 sudo apt install -y fcitx5 fcitx5-chinese-addons fcitx5-config-qt \
   fcitx5-frontend-gtk3 fcitx5-frontend-gtk4 fcitx5-frontend-qt5 fcitx5-rime
 im-config -n fcitx5
 
-# 2. Env vars — the value is `fcitx`, NOT `fcitx5`
+# 2. 环境变量 —— 值是 `fcitx`,不是 `fcitx5`
 sudo sed -i '/^GTK_IM_MODULE=/d;/^QT_IM_MODULE=/d;/^XMODIFIERS=/d' /etc/environment
 printf 'GTK_IM_MODULE=fcitx\nQT_IM_MODULE=fcitx\nXMODIFIERS=@im=fcitx\n' | sudo tee -a /etc/environment
 
-# 3. Install the 雾凇 (rime-ice) config
+# 3. 装雾凇 (rime-ice) 配置
 git clone --depth 1 https://github.com/iDvel/rime-ice.git /tmp/rime-ice
 mkdir -p ~/.local/share/fcitx5/rime && cp -r /tmp/rime-ice/* ~/.local/share/fcitx5/rime/
 rime_deployer --build ~/.local/share/fcitx5/rime /usr/share/rime-data
 
-# 4. Log out and back in.
+# 4. 注销,重新登录。
 ```
 
-Toggle the IME with **Ctrl+Space**; switch Rime schema with **Ctrl+`**.
+切换输入法 **Ctrl+Space**；切换 Rime 方案 **Ctrl+`**（反引号）。
 
-## Using it as a Claude skill
+## 当作 Claude skill 使用
 
-[Agent Skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) let Claude pull in this workflow automatically when you ask about Chinese input on Linux. To install for [Claude Code](https://docs.claude.com/en/docs/claude-code/overview):
+[Agent Skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) 能让 Claude 在你问到「Linux 上中文输入」相关问题时自动调用这套流程。在 [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) 里安装：
 
 ```bash
 git clone https://github.com/Rong-Tao/linux-wayland-chinese-input-method.git \
   ~/.claude/skills/linux-wayland-chinese-input-method
 ```
 
-Then ask Claude something like *"我在 Ubuntu Wayland 上中文输入法打不出字，帮我装一下"* and it will follow this guide.
+然后对 Claude 说一句类似 *「我在 Ubuntu Wayland 上中文输入法打不出字，帮我装一下」*，它就会照这份指南来做。
 
-## Credits
+## 致谢
 
-Built on these open-source projects:
+基于这些开源项目：
 
-- [Rime / 中州韵](https://rime.im/) — the input method engine
-- [rime-ice / 雾凇拼音](https://github.com/iDvel/rime-ice) — the config that makes it feel like Sogou
-- [fcitx5](https://github.com/fcitx/fcitx5) — the input method framework
-- [fcitx5-mellow-themes](https://github.com/sanweiya/fcitx5-mellow-themes) — the rounded theme
+- [Rime / 中州韵](https://rime.im/) —— 输入法引擎
+- [rime-ice / 雾凇拼音](https://github.com/iDvel/rime-ice) —— 让它逼近搜狗手感的配置
+- [fcitx5](https://github.com/fcitx/fcitx5) —— 输入法框架
+- [fcitx5-mellow-themes](https://github.com/sanweiya/fcitx5-mellow-themes) —— 圆角主题
 
-## License
+## 许可证
 
 [MIT](LICENSE)
